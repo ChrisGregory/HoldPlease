@@ -7,8 +7,8 @@ public class LinkedList<T> implements Queue<T> {
 	@Override
 	public Iterator<T> iterator() {
 		Iterator<T> iterator = new Iterator<T>() {
-			LinkedItem<T> currentItem;
-			LinkedItem<T> lastItem;
+			LinkedItem<T> currentItem = firstItem;
+			LinkedItem<T> lastItem = null;
 
 			@Override
 			public boolean hasNext() {

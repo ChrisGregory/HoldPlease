@@ -12,6 +12,10 @@ public class Bank implements QueueableService {
 	public double getAverageClientWaitTime() {
 		int clients = 0;
 		int totalWaitTime = 0;
+		for (int j = 0; j < servingClients.size(); j++) {
+			clients++;
+			totalWaitTime += servingClients.get(j).getExpectedServiceTime();
+		}
 		for (int j = 0; j < waitingClients.size(); j++) {
 			clients++;
 			totalWaitTime += waitingClients.get(j).getExpectedServiceTime();
@@ -22,11 +26,24 @@ public class Bank implements QueueableService {
 	@Override
 	public double getClientWaitTime(Client client) {
 		int totalWaitTime = 0;
+		int[] times = new int[tellers];
 		for (int i = 0; i < tellers; i++) {
-			totalWaitTime += waitingClients.get(i).getExpectedServiceTime();
-			if (waitingClients.get(i) == client) {
+			times[i] = servingClients.get(i).getExpectedServiceTime();
+		}
+		for (int i = 0; i < waitingClients.size(); i++)
+		{
+			if(client == waitingClients.get(i)){
 				return totalWaitTime;
 			}
+			int smallestLine = 0;
+			for(int j = 0; j < servingClients.size(); j++){
+				if(times[j] < times[smallestLine])
+				{
+					smallestLine = j;
+				}
+			}
+			times[smallestLine] += waitingClients.get(i).getExpectedServiceTime();
+			
 		}
 		return 0;
 	}

@@ -2,12 +2,39 @@ import java.util.Iterator;
 
 public class PriorityQueue<T> implements Queue<T> {
 
-	PriorityItem firstItem;
+	PriorityItem<T> firstItem;
+	int length = 0;
+	
+	public int length(){
+		return length;
+	}
 
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		Iterator<T> iterator = new Iterator<T>() {
+			public PriorityItem<T> currentItem = firstItem;
+			public PriorityItem<T> lastItem = null;
+
+			@Override
+			public boolean hasNext() {
+				return currentItem.getNextItem() != null;
+			}
+
+			@Override
+			public T next() {
+				lastItem = currentItem;
+				currentItem = currentItem.getNextItem();
+				return currentItem.value;
+			}
+
+			@Override
+			public void remove() {
+				if (lastItem != null) {
+					lastItem.setNextItem(currentItem.getNextItem());
+				}
+			}
+		};
+		return iterator;
 	}
 
 	@Override
@@ -19,6 +46,7 @@ public class PriorityQueue<T> implements Queue<T> {
 				firstItem = firstItem.getNextItem();
 			}
 		}
+		length--;
 		return result;
 	}
 
@@ -28,6 +56,7 @@ public class PriorityQueue<T> implements Queue<T> {
 
 		if (firstItem == null) {
 			firstItem = new PriorityItem(t);
+			length++;
 			result = true;
 		} else {
 			boolean searching = true;
@@ -36,6 +65,7 @@ public class PriorityQueue<T> implements Queue<T> {
 			if(NewItem.priority > firstItem.priority){
 				NewItem.setNextItem(firstItem);
 				firstItem = NewItem;
+				length++;
 				result = true;
 			} else {
 				while (searching) {
@@ -48,6 +78,7 @@ public class PriorityQueue<T> implements Queue<T> {
 					}
 					currentItem = currentItem.getNextItem();
 				}
+				length++;
 				result = true;
 			}
 		}

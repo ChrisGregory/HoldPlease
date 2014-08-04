@@ -2,37 +2,38 @@ import java.util.*;
 
 public class GroceryStore implements QueueableService {
 	
-	List<ArrayList<Client>> lines;
+	List<Client>[] lines;
 	int cashiers;
 	
 	public GroceryStore(int numberOfCashiers){
 		this.cashiers = numberOfCashiers;
-		lines = new LinkedList<LinkedList<Client>>;
+		lines = new List[cashiers];
 		for(int i = 0; i < numberOfCashiers; i++){
-			lines.add(new LinkedList<Client>(Client.class, 1));
+			lines[i] = new ArrayList<Client>(Client.class, 1);
 		}
 	}
 	
+	//theta(n^2)
 	@Override
 	public double getAverageClientWaitTime() {
 		int clients = 0;
 		int totalWaitTime = 0;
 		for(int i = 0; i < cashiers; i++){
-			for(int j = 0; j < lines.get(i).size(); j++){
+			for(int j = 0; j < lines[i].size(); j++){
 				clients++;
-				totalWaitTime += lines.get(i).get(j).getExpectedServiceTime();
+				totalWaitTime += lines[i].get(j).getExpectedServiceTime();
 			}
 		}
 		return totalWaitTime/clients;
 	}
 
+	//theta(n^2)
 	@Override
 	public double getClientWaitTime(Client client) {
 		for(int i = 0; i < cashiers; i++){
-			int totalWaitTime = 0;
-			for(int j = 0; j < lines.get(i).size(); j++){
-				totalWaitTime += lines.get(i).get(j).getExpectedServiceTime();
-				if(lines.get(i).get(j) == client){
+			for(int j = 0; j < lines[i].size(); j++){
+				int totalWaitTime += lines[i].get(j).getExpectedServiceTime();
+				if(lines[i].get(j) == client){
 					return totalWaitTime;
 				}
 			}
@@ -46,25 +47,24 @@ public class GroceryStore implements QueueableService {
 		int shortestLineTime = Integer.MAX_VALUE;
 		for(int i = 0; i < cashiers; i++){
 			int currentLineTime = 0;
-			for(int j = 0; j < lines.get(i).size(); j++){
-				currentLineTime += lines.get(i).get(j).getExpectedServiceTime();
+			for(int j = 0; j < lines[i].size(); j++){
+				currentLineTime += lines[i].get(j).getExpectedServiceTime();
 			}
 			if(currentLineTime < shortestLineTime){
 				shortestLineTime = currentLineTime;
 				shortestLineIndex = i;
 			}
 		}
-		lines.get(shortestLineIndex).add(client);
+		lines[shortestLineIndex].add(client);
 		return true;
 	}
 
 	@Override
 	public void advanceMinute() {
 		for(int i = 0; i < cashiers; i++){
-			int currentLineTime = 0;
-			lines.get(i).get(0).servedMinute();
-			if(lines.get(i).get(0).getExpectedServiceTime() <= 0){
-				lines.get(i).remove(lines.get(i).get(0));
+			lines[i].get(0).servedMinute();
+			if(lines[i].get(0).getExpectedServiceTime() <= 0){
+				lines[i].remove(lines[i].get(0));
 			}
 		}
 	}
