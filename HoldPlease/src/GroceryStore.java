@@ -31,8 +31,9 @@ public class GroceryStore implements QueueableService {
 	@Override
 	public double getClientWaitTime(Client client) {
 		for(int i = 0; i < cashiers; i++){
+			int totalWaitTime = 0;
 			for(int j = 0; j < lines[i].size(); j++){
-				int totalWaitTime += lines[i].get(j).getExpectedServiceTime();
+				totalWaitTime = lines[i].get(j).getExpectedServiceTime();
 				if(lines[i].get(j) == client){
 					return totalWaitTime;
 				}
